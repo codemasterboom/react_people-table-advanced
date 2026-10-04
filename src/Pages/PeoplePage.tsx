@@ -41,6 +41,18 @@ export const PeoplePage = () => {
       );
     }
 
+    const centuriesFilter = searchParams.getAll('centuries');
+
+    if (centuriesFilter.length > 0) {
+      const centuryNumbers = centuriesFilter.map(val => Number(val));
+
+      result = result.filter(person => {
+        const century = Math.floor(person.born / 100);
+
+        return centuryNumbers.includes(century);
+      });
+    }
+
     return result;
   }, [people, searchParams]);
 
