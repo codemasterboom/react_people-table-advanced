@@ -47,9 +47,33 @@ export const PeoplePage = () => {
       const centuryNumbers = centuriesFilter.map(val => Number(val));
 
       result = result.filter(person => {
-        const century = Math.floor(person.born / 100);
+        const century = Math.floor(person.born / 100) + 1;
 
         return centuryNumbers.includes(century);
+      });
+    }
+
+    const sortBy = searchParams.get('sort');
+    const order = searchParams.get('order') || 'asc';
+
+    if (sortBy) {
+      result = result.toSorted((a, b) => {
+        const aValue = a[sortBy as keyof Person];
+        const bValue = b[sortBy as keyof Person];
+
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          if (order === 'asc') {
+            return aValue.localeCompare(bValue);
+          } else {
+            return bValue.localeCompare(aValue);
+          }
+        }
+
+        if (order === 'asc') {
+          return (aValue as number) - (bValue as number);
+        } else {
+          return (bValue as number) - (aValue as number);
+        }
       });
     }
 
