@@ -1,13 +1,14 @@
 import { PeopleFilters } from '../components/PeopleFilters';
 import { Loader } from '../components/Loader';
 import { PeopleTable } from '../components/PeopleTable';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Person } from '../types';
 import { getPeople } from '../api';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 export const PeoplePage = () => {
   const [people, setPeople] = useState<Person[]>([]);
+  const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
 
@@ -19,6 +20,29 @@ export const PeoplePage = () => {
       .catch(() => setIsError(true))
       .finally(() => setIsLoading(false));
   }, []);
+
+  const filteredPeople = useMemo(() => {
+    let result = people;
+
+    const sexFilter = searchParams.get('sex');
+
+    if (sexFilter) {
+      result = result.filter(person => person.sex === sexFilter);
+    }
+
+    const queryFilter = searchParams.get('query')?.toLowerCase() || null;
+
+    if (queryFilter) {
+      result = result.filter(
+        person =>
+          person.name.toLowerCase().includes(queryFilter) ||
+          person.fatherName?.toLowerCase().includes(queryFilter) ||
+          person.motherName?.toLowerCase().includes(queryFilter),
+      );
+    }
+
+    return result;
+  }, [people, searchParams]);
 
   return (
     <>
@@ -44,9 +68,13 @@ export const PeoplePage = () => {
                 </p>
               )}
 
-              <p>There are no people matching the current search criteria</p>
+              {!isLoading && !isError && filteredPeople.length === 0 && (
+                <p>There are no people matching the current search criteria</p>
+              )}
 
-              <PeopleTable people={people} selectedSlug={slug} />
+              {!isLoading && !isError && filteredPeople.length > 0 && (
+                <PeopleTable people={filteredPeople} selectedSlug={slug} />
+              )}
             </div>
           </div>
         </div>
