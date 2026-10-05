@@ -1,40 +1,32 @@
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import cn from 'classnames';
-import { getSearchWith } from '../utils/searchHelper';
+import { SearchLink } from './SearchLink';
 
 export const SexFilter: React.FC = () => {
   const [searchParams] = useSearchParams();
 
   const sexFilter = searchParams.get('sex') || '';
 
-  function getSexLink(value: string | null) {
-    const newParams = getSearchWith(searchParams, {
-      sex: value,
-    });
-
-    return `${newParams ? `?${newParams}` : ''}`;
-  }
-
   return (
     <p className="panel-tabs" data-cy="SexFilter">
-      <Link
+      <SearchLink
         className={cn({ 'is-active': sexFilter === '' })}
-        to={getSexLink(null)}
+        params={{ sex: null }}
       >
         All
-      </Link>
-      <Link
+      </SearchLink>
+      <SearchLink
         className={cn({ 'is-active': sexFilter === 'm' })}
-        to={getSexLink('m')}
+        params={{ sex: 'm' }}
       >
         Male
-      </Link>
-      <Link
+      </SearchLink>
+      <SearchLink
         className={cn({ 'is-active': sexFilter === 'f' })}
-        to={getSexLink('f')}
+        params={{ sex: 'f' }}
       >
         Female
-      </Link>
+      </SearchLink>
     </p>
   );
 };

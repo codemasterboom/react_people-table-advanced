@@ -1,22 +1,9 @@
-import { Link, useSearchParams } from 'react-router-dom';
 import { NameFilter } from './NameFilter';
 import { SexFilter } from './SexFilter';
-import { getSearchWith } from '../utils/searchHelper';
 import { CenturiesFilter } from './CenturiesFilter';
+import { SearchLink } from './SearchLink';
 
 export const PeopleFilters = () => {
-  const [searchParams] = useSearchParams();
-
-  const getResetLink = () => {
-    const newParams = getSearchWith(searchParams, {
-      sex: null,
-      query: null,
-      centuries: null,
-    });
-
-    return `${newParams ? `?${newParams}` : ''}`;
-  };
-
   return (
     <nav className="panel">
       <p className="panel-heading">Filters</p>
@@ -26,12 +13,12 @@ export const PeopleFilters = () => {
       <CenturiesFilter />
 
       <div className="panel-block">
-        <Link
+        <SearchLink
           className="button is-link is-outlined is-fullwidth"
-          to={getResetLink()}
+          params={{ sex: null, query: null, centuries: null }}
         >
           Reset all filters
-        </Link>
+        </SearchLink>
       </div>
     </nav>
   );
